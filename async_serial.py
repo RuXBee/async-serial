@@ -5,7 +5,6 @@ from typing import Awaitable, Coroutine
 from serial.tools import list_ports
 from serial import SerialException
 
-
 class AsyncSerial(Serial):
     """
 
@@ -33,7 +32,11 @@ class AsyncSerial(Serial):
 
     @property
     def callback_incoming_plot(self, callback: Awaitable):
-        self._callback_incoming_plot = callback
+        return self._callback_incoming_plot
+    
+    @callback_incoming_plot.setter
+    def callback_incoming_plot(self, func):
+        self._callback_incoming_plot = func
 
     def write(self, data: bytes):
         """_summary_
@@ -53,7 +56,11 @@ class AsyncSerial(Serial):
                     self.__init__(self.pdescription, self.baudrate)
                 except Exception as e:
                     pass
-            
+    
+    def list_available_ports(self):
+        for dev in list_ports.comports():
+            print(dev)
+                    
     async def handle_serial(self, char: str) -> Coroutine:
         """_summary_
 
@@ -77,6 +84,6 @@ class AsyncSerial(Serial):
                     self.__init__(self.pdescription, self.baudrate)
                 except Exception as e:
                     pass
-
-            await asyncio.sleep(0.1)
+            if data == b'':
+                await asyncio.sleep(0.1)
 
